@@ -79,9 +79,17 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-let size = 25; // Any larger gives rounding errors
-let dimension = 2;
+/*
+=========================================================================================
+Define the random walk properties
+=========================================================================================
+*/
+
+let size = 20; // Any larger than 25/20 gives rounding errors
+let dimension = 3;
 let latticeSpacing = 10;
+let plotRate = 100;
+let dotRadius = 0.01;
 
 /*
 =========================================================================================
@@ -89,7 +97,7 @@ Display the dots of the lattice
 =========================================================================================
 */
 
-buildLattice(size, 0.3, dimension);
+buildLattice(size, dotRadius, dimension);
 
 function buildLattice( latticeSize, dotRadius, latticeDimension ) {
 	// constants of the lattice geometry and colour
@@ -98,8 +106,8 @@ function buildLattice( latticeSize, dotRadius, latticeDimension ) {
 
 	// building the lattice
 	if ( latticeDimension == 2 ) {
-		for (let i = -latticeSize; i < latticeSize; i++) {
-			for (let j = -latticeSize; j < latticeSize; j++) {
+		for (let i = -latticeSize; i < latticeSize+1; i++) {
+			for (let j = -latticeSize; j < latticeSize+1; j++) {
 					const sphere = new THREE.Mesh( geometrySphere, materialBlack ); 
 	
 					sphere.position.x = i * latticeSpacing;
@@ -109,9 +117,9 @@ function buildLattice( latticeSize, dotRadius, latticeDimension ) {
 			}
 		}
 	} else if ( latticeDimension == 3 ) {
-		for (let i = -latticeSize; i < latticeSize; i++) {
-			for (let j = -latticeSize; j < latticeSize; j++) {
-				for (let k = -latticeSize; k < latticeSize; k++) {
+		for (let i = -latticeSize; i < latticeSize+1; i++) {
+			for (let j = -latticeSize; j < latticeSize+1; j++) {
+				for (let k = -latticeSize; k < latticeSize+1; k++) {
 				
 					const sphere = new THREE.Mesh( geometrySphere, materialBlack ); 
 	
@@ -144,34 +152,36 @@ for (let i = 0; i < size; i++) {
 	largestWalkNumber = largestWalkNumber.concat((dimToBase[dimension]-1).toString())
 }
 
-let walk = Math.floor((Math.random() * parseInt(largestWalkNumber,4)) + 1).toString(4).padStart(size,'0'); 
+let walk = Math.floor((Math.random() * parseInt(largestWalkNumber,dimToBase[dimension])) + 1).toString(dimToBase[dimension]).padStart(size,'0'); 
 
 console.log(walk)
 
 // Plot the random walk
 
-let numberToVector = { // Only valid for 2D ( 0:up 1:right 2:down 3:left )
-	0 : [0,-latticeSpacing],
-	1 : [latticeSpacing,0],
-	2 : [0,latticeSpacing],
-	3 : [-latticeSpacing,0]
+let numberToVector = { // 0:right 1:left 2:up 3:down 4:in 5:out
+	0 : [latticeSpacing,0,0],
+	1 : [-latticeSpacing,0,0],
+	2 : [0,latticeSpacing,0],
+	3 : [0,-latticeSpacing,0],
+	4 : [0,0,latticeSpacing],
+	5 : [0,0,-latticeSpacing]
 }
 
-const path = new THREE.Path();
-const material = new THREE.LineBasicMaterial( { color: 0x000000 } );
+const materialBlack = new THREE.LineBasicMaterial( { color: 0x000000 } );
+let startPoint = new THREE.Vector3(0,0,0)
 
 function newLineSegment(i) {
 	let direction = numberToVector[walk[i]];
+	let endPoint = new THREE.Vector3(startPoint.x + direction[0] , startPoint.y + direction[1] , startPoint.z + direction[2] );
+	let points = [startPoint,endPoint]
 
-	//path.moveTo(path.currentPoint.x + direction[0], path.currentPoint.y + direction[1]);
-	path.lineTo(path.currentPoint.x + direction[0], path.currentPoint.y + direction[1]);
-	const points = path.getPoints();
-	const geometry = new THREE.BufferGeometry().setFromPoints( points );
+	const path = new THREE.BufferGeometry().setFromPoints( points );
+	const lineSegment = new THREE.Line( path, materialBlack );
+	scene.add( lineSegment );
 
-	const line = new THREE.Line( geometry, material );
-	scene.add( line );
+	startPoint = endPoint;
 }
 
 for (let i = 0; i < size; i++) {
-	setTimeout(() => {  newLineSegment(i); }, 50*i);
+	setTimeout(() => {  newLineSegment(i); }, plotRate*i);
 }
