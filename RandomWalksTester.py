@@ -34,17 +34,25 @@ class RandWalks:
     def __init__(self, lattice, length, origin = [0,0]): #origin should be defined relative to lattice somehow
         self.origin = origin 
         runDir = [origin]
-        runLocation = [0,0]
+        runNumList = []
+        runLocation = origin
         self.adjNode = lattice.adjNode
         self.nodeBias = lattice.nodeBias
         for i in range(length): 
-            runLocation =self.adjNode(runLocation)[int(np.random.choice(range(len(self.adjNode(runLocation))),1 , self.nodeBias(runLocation)))] #Error type of input data not int? This isnt the location its the direction we are moving in 
-            # ahh the problem is runLocation is a number but it then gets fed back into the adjNode fucntion as sif its a node which it isnt 
+            x = np.random.choice(range(len(self.adjNode(runLocation))),1 , self.nodeBias(runLocation))[0]
+            runNumList.append(x)
+            runLocation =self.adjNode(runLocation)[np.random.choice(range(len(self.adjNode(runLocation))),1 , self.nodeBias(runLocation))[0]] 
             runDir.append(runLocation) 
         self.runDir = runDir
+        self.runNumList = runNumList
+        string_value = "".join([str(current_integer) for current_integer in runNumList]) # this takes the list of integers turns it into a list
+        # of strings and then joins them and returns an integer
+        self.runNumInt = int(string_value)
+        
+        
 
 
-planeWalk = RandWalks(plane,500)
-print(planeWalk.runDir)
+planeWalk = RandWalks(plane,10)
+print(planeWalk.runNumInt)
 
 
