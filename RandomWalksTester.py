@@ -10,7 +10,10 @@
 
 import numpy as np 
 class Lattice: 
-    def __init__(self, adj, biases):
+    def __init__(self, adj, biases = None):
+        if biases is None :
+            def biases(v,w):
+                return 1/len(adj(v))
         self.adjNode = adj
         self.biases = biases  
     def nodeBias(self, node): 
@@ -19,7 +22,7 @@ class Lattice:
             edgeBias.append(self.biases(node,i))
         return edgeBias
     
-class RandWalks: 
+class RandWalk: 
     def __init__(self, lattice, length, origin = [0,0]): #origin should be defined relative to lattice somehow
         self.origin = origin 
         runDir = [origin]
@@ -45,7 +48,6 @@ def lat2DAdj(v):
 
 def lat2DBias(v,w):
     return 0.25
-plane = Lattice(planeAdj, planeBias) # probably will change to a function which always outputs 0.25
 
 #I have 0 right 1 left 2 up 3 down 4 in 5 out
 
@@ -63,4 +65,4 @@ def hexGridAdj(v):
     return [[x+1,y],[x,y-1], [x-1,y-1]] # havent checked this properly yet. same method as the triangle grid. Be careful! not every point from 
 # the normal lattice is actually included in the hex grid so it does depend on what coordinate you start your path on which hex grid youll be traveling on 
 
-
+#Time to figure out a const function which assigns a given probability to every edge so ther edoesnt have to be a unique constant function for everything
