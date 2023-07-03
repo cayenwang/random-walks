@@ -159,16 +159,88 @@ Define the global properties
 =========================================================================================
 */
 
-let size = 1000; // Any larger than 25/20 gives rounding errors
-let dimension = 3;
+// Global constants
 
 let latticeSpacing = 10;
-let plotRate = 50;
+let plotRate = 1;
 let dotRadius = 0.1;
+
+// Possible Shapes
+const _2S = {
+	base : 4,
+	evenDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0,latticeSpacing,0],	// Up
+		3 : [0,-latticeSpacing,0]	// Down
+	},
+	oddDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0,latticeSpacing,0],	// Up
+		3 : [0,-latticeSpacing,0]	// Down
+	}
+}
+const _2T = {
+	base : 6,
+	evenDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpR
+		3 : [-0.5*latticeSpacing,-0.866*latticeSpacing,0],	// DownL
+		4 : [-0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpL
+		5 : [0.5*latticeSpacing,-0.866*latticeSpacing,0]	// DownR
+	},
+	oddDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpR
+		3 : [-0.5*latticeSpacing,-0.866*latticeSpacing,0],	// DownL
+		4 : [-0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpL
+		5 : [0.5*latticeSpacing,-0.866*latticeSpacing,0]	// DownR
+	}
+}
+const _2H = {
+	base : 3,
+	evenDirections : {
+		0 : [0,-latticeSpacing,0], 	// Down
+		1 : [0.866*latticeSpacing,0.5*latticeSpacing,0],	// UpR
+		2 : [-0.866*latticeSpacing,0.5*latticeSpacing,0]	// UpL
+	},
+	oddDirections : {
+		0 : [0,latticeSpacing,0], 	// Up
+		1 : [0.866*latticeSpacing,-0.5*latticeSpacing,0],	// DownR
+		2 : [-0.866*latticeSpacing,-0.5*latticeSpacing,0]	// DownL
+	}
+}
+const _3S = {
+	base : 6,
+	evenDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0,latticeSpacing,0],	// Up
+		3 : [0,-latticeSpacing,0],	// Down
+		4 : [0,0,latticeSpacing],	// In
+		5 : [0,0,-latticeSpacing]	// Out
+	},
+	oddDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0,latticeSpacing,0],	// Up
+		3 : [0,-latticeSpacing,0],	// Down
+		4 : [0,0,latticeSpacing],	// In
+		5 : [0,0,-latticeSpacing]	// Out
+	}
+}
+
+// Define the specific walk to be run
+
+let size = 1000;
+let shape = _2S
 
 /*
 =========================================================================================
-Display the dots of the lattice
+Display the dots of the lattice (UNNECESSARY // NEEDS REDOING)
 =========================================================================================
 */
 
@@ -212,8 +284,8 @@ function buildLattice( latticeSize, dotRadius, latticeDimension ) {
 		}
 	}
 	
-	
 }
+
 
 /*
 =========================================================================================
@@ -222,33 +294,25 @@ Display a random walk
 */
 
 // Generate a random walk
-var dimToBase = {
-	2 : 4,
-	3 : 6
-}
 
 let walk = '';
 for (let i = 0; i < size; i++) {
-	walk = walk.concat((Math.floor(Math.random() * dimToBase[dimension])).toString())
+	walk = walk.concat((Math.floor(Math.random() * shape.base)).toString())
 }
 
-console.log(walk)
+console.log(walk);
 
 // Plot the random walk
-
-let numberToVector = { // 0:right 1:left 2:up 3:down 4:in 5:out
-	0 : [latticeSpacing,0,0],
-	1 : [-latticeSpacing,0,0],
-	2 : [0,latticeSpacing,0],
-	3 : [0,-latticeSpacing,0],
-	4 : [0,0,latticeSpacing],
-	5 : [0,0,-latticeSpacing]
-}
 
 let startPoint = new THREE.Vector3(0,0,0)
 
 function newLineSegment(i) {
-	let direction = numberToVector[walk[i]];
+	let direction
+	if (i%2 == 0) {
+		direction = shape.evenDirections[walk[i]];
+	} else {
+		direction = shape.oddDirections[walk[i]];
+	}
 	let endPoint = new THREE.Vector3(startPoint.x + direction[0] , startPoint.y + direction[1] , startPoint.z + direction[2] );
 	let points = [startPoint,endPoint]
 
