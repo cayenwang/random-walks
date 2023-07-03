@@ -1,20 +1,22 @@
-# new lattice definition. A lattice is a set of points with only a few qualities: adjacency, edge direction and weighting. adjacency is could 
-# be  a function which checks for adjacency or it could be a function that calculates the adjacent points. Take the second option and we have 
-# a function which also defines the region we are considering the walks in. Awesome now let the weightings function be none symmetric i.e 
-# f(A,B) ≠ f(B,A) and bobs you uncle. let adj stand for adjacency
+# Lattice is defined as a class. Its paramters are two functions adj and biases. Adj takes a node and tells you which nodes are adjacent to it 
+# and biases takes two ordered nodes and tells you what the probability of going down the corresponding edge is. this defines the lattice which the 
+# walk will happen on. Lattice has 3 class methods adjNode which is equivalent to adj. biases (as youd expect) and nodeBias which takes a node and gives back a list 
+# containing all the biases of the paths starting at the given node and leading to adjacent nodes.
 
-# biases is a function that takes an ordered touple of nodes and returns the bias in that direction 
-# adj is a function that returns all the nodes adjacent to that point 
+#Class  RandWalks takes a lattice, length and origin. Origin is where the path will start and is included only to allow for different starting points in irregular 
+# lattices later down the road. Lattice must be from the lattice class as the code references adjNode and nodeBias ect. The Line where run location is 
+# defined is dodgy and throws up a depreciation error message. I think np.random.choice is giving out a 1d list and its upset im taking that as an integer to make 
+# the list call work. I'm sure theres a way to make it the right data type  
 
 import numpy as np 
 class Lattice: 
     def __init__(self, adj, biases):
-        self.adjPoints = adj
+        self.adjNode = adj
         self.biases = biases  
-    def pointBias(self, point): 
+    def nodeBias(self, node): 
         edgeBias = []
-        for i in self.adjPoints(point): 
-            edgeBias.append(self.biases(point,i))
+        for i in self.adjNode(node): 
+            edgeBias.append(self.biases(node,i))
         return edgeBias
     
 def planeAdj(v):
@@ -29,20 +31,20 @@ plane = Lattice(planeAdj, planeBias) # probably will change to a function which 
 
 
 class RandWalks: 
-    def __init__(self, lattice, length, origin = [0,0]): #origin should be a property of the lattice, maybe this should be a sub class of lattice 
+    def __init__(self, lattice, length, origin = [0,0]): #origin should be defined relative to lattice somehow
         self.origin = origin 
         runDir = [origin]
         runLocation = [0,0]
-        self.adjPoints = lattice.adjPoints
-        self.pointBias = lattice.pointBias
+        self.adjNode = lattice.adjNode
+        self.nodeBias = lattice.nodeBias
         for i in range(length): 
-            runLocation =self.adjPoints(runLocation)[int(np.random.choice(range(len(self.adjPoints(runLocation))),1 , self.pointBias(runLocation)))] #Error type of input data not int? This isnt the location its the direction we are moving in 
-            # ahh the problem is runLocation is a number but it then gets fed back into the adjpoints fucntion as sif its a point which it isnt 
+            runLocation =self.adjNode(runLocation)[int(np.random.choice(range(len(self.adjNode(runLocation))),1 , self.nodeBias(runLocation)))] #Error type of input data not int? This isnt the location its the direction we are moving in 
+            # ahh the problem is runLocation is a number but it then gets fed back into the adjNode fucntion as sif its a node which it isnt 
             runDir.append(runLocation) 
         self.runDir = runDir
 
 
-planeWalk = RandWalks(plane,100)
+planeWalk = RandWalks(plane,500)
 print(planeWalk.runDir)
 
 
