@@ -77,6 +77,37 @@ const _3S = {
 		5 : [0,0,-latticeSpacing]	// Out
 	}
 }
+const _3T = {
+	base : 12,
+	evenDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpR
+		3 : [-0.5*latticeSpacing,-0.866*latticeSpacing,0],	// DownL
+		4 : [-0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpL
+		5 : [0.5*latticeSpacing,-0.866*latticeSpacing,0],	// DownR
+		6 : [0.5*latticeSpacing,0.433*latticeSpacing,0.866*latticeSpacing],	// InUpR
+		7 : [-0.5*latticeSpacing,0.433*latticeSpacing,0.866*latticeSpacing],	// InUpL
+		8 : [0,-0.433*latticeSpacing,0.866*latticeSpacing],	// InDown
+		9 : [0.5*latticeSpacing,0.433*latticeSpacing,-0.866*latticeSpacing],	// OutUpR
+		a : [-0.5*latticeSpacing,0.433*latticeSpacing,-0.866*latticeSpacing],	// OutUpL
+		b : [0,-0.433*latticeSpacing,-0.866*latticeSpacing]	// OutDown
+	},
+	oddDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpR
+		3 : [-0.5*latticeSpacing,-0.866*latticeSpacing,0],	// DownL
+		4 : [-0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpL
+		5 : [0.5*latticeSpacing,-0.866*latticeSpacing,0],	// DownR
+		6 : [0.5*latticeSpacing,-0.433*latticeSpacing,0.866*latticeSpacing],	// InDownR
+		7 : [-0.5*latticeSpacing,-0.433*latticeSpacing,0.866*latticeSpacing],	// InDownL
+		8 : [0,0.433*latticeSpacing,0.866*latticeSpacing],	// InUp
+		9 : [0.5*latticeSpacing,-0.433*latticeSpacing,-0.866*latticeSpacing],	// OutDownR
+		a : [-0.5*latticeSpacing,-0.433*latticeSpacing,-0.866*latticeSpacing],	// OutDownL
+		b : [0,0.433*latticeSpacing,-0.866*latticeSpacing]	// OutUp
+	}
+} // Broken (odd even wont work)
 
 /*
 =========================================================================================
@@ -334,7 +365,7 @@ Display a random walk
 function generateRandomWalk(size, shape) {
 	let walk = '';
 	for (let i = 0; i < size; i++) {
-		walk = walk.concat((Math.floor(Math.random() * shape.base)).toString())
+		walk = walk.concat((Math.floor(Math.random() * shape.base)).toString(shape.base))
 	}
 	return walk
 }
