@@ -9,6 +9,7 @@
 # the list call work. I'm sure theres a way to make it the right data type  
 
 import numpy as np 
+from operator import add
 
 class Lattice: 
     def __init__(self, adj, biases = None):
@@ -36,11 +37,24 @@ class RandWalk:
         for i in range(length): 
             x = np.random.choice(range(len(self.adjNode(runLocation))),1 , p = self.nodeBias(runLocation))[0]
             runNumList.append(x)
-            runLocation =self.adjNode(runLocation)[np.random.choice(range(len(self.adjNode(runLocation))),1 , p= self.nodeBias(runLocation))[0]] 
+            runLocation =self.adjNode(runLocation)[x] 
             runDir.append(runLocation) 
         self.runDir = runDir
         self.runNumList = runNumList
         string_value = "".join([str(current_integer) for current_integer in runNumList]) # this takes the list of integers turns it into a list
         # of strings and then joins them and returns an integer
         self.runNumInt = int(string_value)
-        
+
+
+ 
+ 
+def int2Dir(v):
+    numList = list(map(lambda x: int(x), str(v)))
+    runLocation = [0,0]
+    runDir = [[0,0]]
+    for i in numList:
+        lookup = {0: [1,0], 1: [-1,0], 2: [0,1], 3: [0,-1]}
+        runLocation = [runLocation[0]+lookup[i][0], runLocation[1] + lookup[i][1]] #this is disgusting dont judge me 
+        runDir.append(runLocation)
+    return runDir        #this doesnt work for a leading 0 but it seems to work fine otherwise 
+
