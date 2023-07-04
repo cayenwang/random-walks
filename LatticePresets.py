@@ -26,7 +26,7 @@ def hexGridAdj(v):
 # in this document anyway. Second having biases functions which take a adj function as a bias 
 
 
-def funnelBias2(v,w):
+def funnelBias2D(v,w):
     funnelAdj = list(filter(lambda x : (x[0] <= abs(x[1])) and (x[0] >= -abs(x[1])), lat2DAdj(v))) # this is right
     if w in funnelAdj: 
         out = 1/len(funnelAdj)
