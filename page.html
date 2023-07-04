@@ -16,5 +16,29 @@
 	</head>
 	<body>
 		<script type="module" src="/visualizer.js"></script>
+
+		<!--Input Shape-->
+		<input type="radio" id="2S" name="shapeInput" value="_2S" checked>
+		<label for="2S">2D Square Grid</label>
+		<input type="radio" id="2T" name="shapeInput" value="_2T">
+		<label for="2T">2D Triangular Grid</label>
+		<input type="radio" id="2H" name="shapeInput" value="_2H">
+		<label for="2H">2D Hexagonal Grid</label>
+		<input type="radio" id="3S" name="shapeInput" value="_3S">
+		<label for="3S">3D Cubic Honeycomb</label>
+		<!--Input Colouring-->
+
+
+		<!--Option 1: Input Size to generate random walk-->
+		<br>
+		<label for="sizeInput">Length of the Walk</label>
+		<input type="text" id="sizeInput" name="sizeInput" value="100">
+		<!--Option 2: Input Walk Code-->
+
+
+		<!--Submit Button-->
+		<br>
+		<input type="button" id="submitButton" name="submitButton" value="Submit Walk Settings">
+
 	</body>
 </html>

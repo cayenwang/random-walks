@@ -1,12 +1,110 @@
-import * as THREE from '/three.js-master/build/three.module.js';
-import { OrbitControls } from '/three.js-master/examples/jsm/controls/OrbitControls.js';
-import { PointerLockControls } from '/three.js-master/examples/jsm/controls/PointerLockControls.js';
+/*
+=========================================================================================
+Define the global properties
+=========================================================================================
+*/
+
+// Global constants
+
+let latticeSpacing = 10;
+let plotRate = 5;
+let dotRadius = 0.1;
+
+// Possible Shapes
+const _2S = {
+	base : 4,
+	evenDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0,latticeSpacing,0],	// Up
+		3 : [0,-latticeSpacing,0]	// Down
+	},
+	oddDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0,latticeSpacing,0],	// Up
+		3 : [0,-latticeSpacing,0]	// Down
+	}
+}
+const _2T = {
+	base : 6,
+	evenDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpR
+		3 : [-0.5*latticeSpacing,-0.866*latticeSpacing,0],	// DownL
+		4 : [-0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpL
+		5 : [0.5*latticeSpacing,-0.866*latticeSpacing,0]	// DownR
+	},
+	oddDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpR
+		3 : [-0.5*latticeSpacing,-0.866*latticeSpacing,0],	// DownL
+		4 : [-0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpL
+		5 : [0.5*latticeSpacing,-0.866*latticeSpacing,0]	// DownR
+	}
+}
+const _2H = {
+	base : 3,
+	evenDirections : {
+		0 : [0,-latticeSpacing,0], 	// Down
+		1 : [0.866*latticeSpacing,0.5*latticeSpacing,0],	// UpR
+		2 : [-0.866*latticeSpacing,0.5*latticeSpacing,0]	// UpL
+	},
+	oddDirections : {
+		0 : [0,latticeSpacing,0], 	// Up
+		1 : [0.866*latticeSpacing,-0.5*latticeSpacing,0],	// DownR
+		2 : [-0.866*latticeSpacing,-0.5*latticeSpacing,0]	// DownL
+	}
+}
+const _3S = {
+	base : 6,
+	evenDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0,latticeSpacing,0],	// Up
+		3 : [0,-latticeSpacing,0],	// Down
+		4 : [0,0,latticeSpacing],	// In
+		5 : [0,0,-latticeSpacing]	// Out
+	},
+	oddDirections : {
+		0 : [latticeSpacing,0,0], 	// Right
+		1 : [-latticeSpacing,0,0],	// Left
+		2 : [0,latticeSpacing,0],	// Up
+		3 : [0,-latticeSpacing,0],	// Down
+		4 : [0,0,latticeSpacing],	// In
+		5 : [0,0,-latticeSpacing]	// Out
+	}
+}
+
+/*
+=========================================================================================
+User Input Handling
+=========================================================================================
+*/
+
+var shape, size;
+
+document.getElementById("submitButton").onclick = function() {
+	size = document.getElementById("sizeInput").value;
+	shape = eval(document.querySelector('input[name="shapeInput"]:checked').value);
+	let walk = generateRandomWalk(size, shape);
+	console.log(walk);
+	clearWalk();
+	plotWalk(walk);
+};
 
 /*
 =========================================================================================
 Create the scene
 =========================================================================================
 */
+
+import * as THREE from '/three.js-master/build/three.module.js';
+import { OrbitControls } from '/three.js-master/examples/jsm/controls/OrbitControls.js';
+import { PointerLockControls } from '/three.js-master/examples/jsm/controls/PointerLockControls.js';
+
 let camera, controls, scene, renderer;
 
 createScene();
@@ -152,92 +250,6 @@ function onWindowResize() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
 }
     
-
-/*
-=========================================================================================
-Define the global properties
-=========================================================================================
-*/
-
-// Global constants
-
-let latticeSpacing = 10;
-let plotRate = 1;
-let dotRadius = 0.1;
-
-// Possible Shapes
-const _2S = {
-	base : 4,
-	evenDirections : {
-		0 : [latticeSpacing,0,0], 	// Right
-		1 : [-latticeSpacing,0,0],	// Left
-		2 : [0,latticeSpacing,0],	// Up
-		3 : [0,-latticeSpacing,0]	// Down
-	},
-	oddDirections : {
-		0 : [latticeSpacing,0,0], 	// Right
-		1 : [-latticeSpacing,0,0],	// Left
-		2 : [0,latticeSpacing,0],	// Up
-		3 : [0,-latticeSpacing,0]	// Down
-	}
-}
-const _2T = {
-	base : 6,
-	evenDirections : {
-		0 : [latticeSpacing,0,0], 	// Right
-		1 : [-latticeSpacing,0,0],	// Left
-		2 : [0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpR
-		3 : [-0.5*latticeSpacing,-0.866*latticeSpacing,0],	// DownL
-		4 : [-0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpL
-		5 : [0.5*latticeSpacing,-0.866*latticeSpacing,0]	// DownR
-	},
-	oddDirections : {
-		0 : [latticeSpacing,0,0], 	// Right
-		1 : [-latticeSpacing,0,0],	// Left
-		2 : [0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpR
-		3 : [-0.5*latticeSpacing,-0.866*latticeSpacing,0],	// DownL
-		4 : [-0.5*latticeSpacing,0.866*latticeSpacing,0],	// UpL
-		5 : [0.5*latticeSpacing,-0.866*latticeSpacing,0]	// DownR
-	}
-}
-const _2H = {
-	base : 3,
-	evenDirections : {
-		0 : [0,-latticeSpacing,0], 	// Down
-		1 : [0.866*latticeSpacing,0.5*latticeSpacing,0],	// UpR
-		2 : [-0.866*latticeSpacing,0.5*latticeSpacing,0]	// UpL
-	},
-	oddDirections : {
-		0 : [0,latticeSpacing,0], 	// Up
-		1 : [0.866*latticeSpacing,-0.5*latticeSpacing,0],	// DownR
-		2 : [-0.866*latticeSpacing,-0.5*latticeSpacing,0]	// DownL
-	}
-}
-const _3S = {
-	base : 6,
-	evenDirections : {
-		0 : [latticeSpacing,0,0], 	// Right
-		1 : [-latticeSpacing,0,0],	// Left
-		2 : [0,latticeSpacing,0],	// Up
-		3 : [0,-latticeSpacing,0],	// Down
-		4 : [0,0,latticeSpacing],	// In
-		5 : [0,0,-latticeSpacing]	// Out
-	},
-	oddDirections : {
-		0 : [latticeSpacing,0,0], 	// Right
-		1 : [-latticeSpacing,0,0],	// Left
-		2 : [0,latticeSpacing,0],	// Up
-		3 : [0,-latticeSpacing,0],	// Down
-		4 : [0,0,latticeSpacing],	// In
-		5 : [0,0,-latticeSpacing]	// Out
-	}
-}
-
-// Define the specific walk to be run
-
-let size = 1000;
-let shape = _2S
-
 /*
 =========================================================================================
 Display the dots of the lattice (UNNECESSARY // NEEDS REDOING)
@@ -286,7 +298,6 @@ function buildLattice( latticeSize, dotRadius, latticeDimension ) {
 	
 }
 
-
 /*
 =========================================================================================
 Display a random walk
@@ -295,37 +306,51 @@ Display a random walk
 
 // Generate a random walk
 
-let walk = '';
-for (let i = 0; i < size; i++) {
-	walk = walk.concat((Math.floor(Math.random() * shape.base)).toString())
+function generateRandomWalk(size, shape) {
+	let walk = '';
+	for (let i = 0; i < size; i++) {
+		walk = walk.concat((Math.floor(Math.random() * shape.base)).toString())
+	}
+	return walk
 }
-
-console.log(walk);
 
 // Plot the random walk
 
-let startPoint = new THREE.Vector3(0,0,0)
+var walkSegments = []
 
-function newLineSegment(i) {
-	let direction
-	if (i%2 == 0) {
-		direction = shape.evenDirections[walk[i]];
-	} else {
-		direction = shape.oddDirections[walk[i]];
+function plotWalk(walk) {
+	let startPoint = new THREE.Vector3(0,0,0)
+
+	function newLineSegment(i) {
+		let direction
+		if (i%2 == 0) {
+			direction = shape.evenDirections[walk[i]];
+		} else {
+			direction = shape.oddDirections[walk[i]];
+		}
+		let endPoint = new THREE.Vector3(startPoint.x + direction[0] , startPoint.y + direction[1] , startPoint.z + direction[2] );
+		let points = [startPoint,endPoint]
+
+		const path = new THREE.BufferGeometry().setFromPoints( points );
+		let pathColour = "hsl(" + i.toString() + ", 50%, 50%)"
+		const materialColour = new THREE.LineBasicMaterial( { color: pathColour } );
+
+		const lineSegment = new THREE.Line( path, materialColour );
+		scene.add( lineSegment );
+
+		walkSegments.push( lineSegment );
+
+		startPoint = endPoint;
 	}
-	let endPoint = new THREE.Vector3(startPoint.x + direction[0] , startPoint.y + direction[1] , startPoint.z + direction[2] );
-	let points = [startPoint,endPoint]
 
-	const path = new THREE.BufferGeometry().setFromPoints( points );
-	let pathColour = "hsl(" + i.toString() + ", 50%, 50%)"
-	const materialColour = new THREE.LineBasicMaterial( { color: pathColour } );
-
-	const lineSegment = new THREE.Line( path, materialColour );
-	scene.add( lineSegment );
-
-	startPoint = endPoint;
+	for (let i = 0; i < size; i++) {
+		setTimeout(() => {  newLineSegment(i); }, plotRate*i);
+	}
 }
 
-for (let i = 0; i < size; i++) {
-	setTimeout(() => {  newLineSegment(i); }, plotRate*i);
+function clearWalk() {
+	for (let i = 0; i < walkSegments.length; i++) {
+		scene.remove(walkSegments[i]);
+	}
+	walkSegments = [];
 }
