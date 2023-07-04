@@ -84,12 +84,21 @@ User Input Handling
 =========================================================================================
 */
 
-var shape, size;
+var shape, size, sizeInput, walk, walkInput;
 
 document.getElementById("submitButton").onclick = function() {
-	size = document.getElementById("sizeInput").value;
 	shape = eval(document.querySelector('input[name="shapeInput"]:checked').value);
-	let walk = generateRandomWalk(size, shape);
+	sizeInput = document.getElementById("sizeInput").value;
+	walkInput = document.getElementById("walkInput").value;
+
+	if (walkInput == "") {
+		size = sizeInput;
+		walk = generateRandomWalk(size, shape);
+	} else {
+		size = walkInput.length;
+		walk = walkInput;
+	}
+
 	console.log(walk);
 	clearWalk();
 	plotWalk(walk);
