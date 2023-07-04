@@ -9,7 +9,6 @@
 # the list call work. I'm sure theres a way to make it the right data type  
 
 import numpy as np 
-import LatticePresets as LatP
 
 class Lattice: 
     def __init__(self, adj, biases = None):
@@ -23,7 +22,9 @@ class Lattice:
         for i in self.adjNode(node): 
             edgeBias.append(self.biases(node,i))
         return edgeBias
-    
+
+# This seems to work fine 
+
 class RandWalk: 
     def __init__(self, lattice, length = 20, origin = [0,0]): #origin should be defined relative to lattice somehow
         self.origin = origin 
@@ -31,11 +32,11 @@ class RandWalk:
         runNumList = []
         runLocation = origin
         self.adjNode = lattice.adjNode
-        self.nodeBias = lattice.nodeBias
+        self.nodeBias = lattice.nodeBias   # these both work 
         for i in range(length): 
-            x = np.random.choice(range(len(self.adjNode(runLocation))),1 , self.nodeBias(runLocation))[0]
+            x = np.random.choice(range(len(self.adjNode(runLocation))),1 , p = self.nodeBias(runLocation))[0]
             runNumList.append(x)
-            runLocation =self.adjNode(runLocation)[np.random.choice(range(len(self.adjNode(runLocation))),1 , self.nodeBias(runLocation))[0]] 
+            runLocation =self.adjNode(runLocation)[np.random.choice(range(len(self.adjNode(runLocation))),1 , p= self.nodeBias(runLocation))[0]] 
             runDir.append(runLocation) 
         self.runDir = runDir
         self.runNumList = runNumList
@@ -43,6 +44,3 @@ class RandWalk:
         # of strings and then joins them and returns an integer
         self.runNumInt = int(string_value)
         
-plane = Lattice(LatP.lat2DAdj)
-walk = RandWalk(plane)
-print(walk.runNumInt)
