@@ -7,7 +7,7 @@ Define the global properties
 // Global constants
 
 let latticeSpacing = 10;
-let plotRate = 5;
+let defaultPlotRate = 5;
 let dotRadius = 0.1;
 
 // Possible Shapes
@@ -84,7 +84,7 @@ User Input Handling
 =========================================================================================
 */
 
-var shape, size, sizeInput, walk, walkInput;
+var shape, size, sizeInput, walk, walkInput, plotRate;
 
 document.getElementById("submitButton").onclick = function() {
 	shape = eval(document.querySelector('input[name="shapeInput"]:checked').value);
@@ -101,8 +101,17 @@ document.getElementById("submitButton").onclick = function() {
 
 	console.log(walk);
 	clearWalk();
+	setPlotRate();
 	plotWalk(walk);
 };
+
+function setPlotRate() {
+	if (document.getElementById("skipAnimation").checked) {
+		plotRate = defaultPlotRate;
+	} else {
+		plotRate = 0;
+	}
+}
 
 /*
 =========================================================================================
@@ -116,147 +125,151 @@ import { PointerLockControls } from '/three.js-master/examples/jsm/controls/Poin
 
 let camera, controls, scene, renderer;
 
-createScene();
-setCameraControls_Orbit();
-animate();
+init();
 
-function createScene() {
-	// create scene
-	scene = new THREE.Scene();
-	scene.background = new THREE.Color(0xffffff);
-	// set renderer
-	renderer = new THREE.WebGLRenderer({ antialias: true });
-	renderer.setPixelRatio(window.devicePixelRatio);
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	document.body.appendChild(renderer.domElement);
-	// set camera
-	camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 5000);
-	camera.position.set(100, -200, -400);
-	camera.up.set(0, -1, 0);
-	// add light
-	const light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 2.5 );
-	light.position.set( 0.5, 1, 0.75 );
-	scene.add( light );
-
-	window.addEventListener('resize', onWindowResize);
-}
-
-controls = new PointerLockControls( camera, document.body );
-scene.add( controls.getObject() );
-
-let moveUp = false;
-let moveDown = false;
-let moveLeft = false;
-let moveRight = false;
-
-const onKeyDown = function ( event ) {
-	switch ( event.code ) {
-		case 'ArrowUp':
-		case 'KeyW':
-			moveUp = true;
-			break;
-		case 'ArrowLeft':
-		case 'KeyA':
-			moveLeft = true;
-			break;
-		case 'ArrowDown':
-		case 'KeyS':
-			moveDown = true;
-			break;
-
-		case 'ArrowRight':
-		case 'KeyD':
-			moveRight = true;
-			break;
-		case 'ArrowRight':
-		case 'KeyD':
-			moveRight = true;
-			break;
+function init() {
+	createScene();
+	setCameraControls_Orbit();
+	animate();
+	
+	function createScene() {
+		// create scene
+		scene = new THREE.Scene();
+		scene.background = new THREE.Color(0xffffff);
+		// set renderer
+		renderer = new THREE.WebGLRenderer({ antialias: true });
+		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		document.body.appendChild(renderer.domElement);
+		// set camera
+		camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 5000);
+		camera.position.set(100, -200, -400);
+		camera.up.set(0, -1, 0);
+		// add light
+		const light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 2.5 );
+		light.position.set( 0.5, 1, 0.75 );
+		scene.add( light );
+	
+		window.addEventListener('resize', onWindowResize);
 	}
-};
-
-const onKeyUp = function ( event ) {
-	switch ( event.code ) {
-		case 'ArrowUp':
-		case 'KeyW':
-			moveUp = false;
-			break;
-		case 'ArrowLeft':
-		case 'KeyA':
-			moveLeft = false;
-			break;
-		case 'ArrowDown':
-		case 'KeyS':
-			moveDown = false;
-			break;
-		case 'ArrowRight':
-		case 'KeyD':
-			moveRight = false;
-			break;
+	
+	controls = new PointerLockControls( camera, document.body );
+	scene.add( controls.getObject() );
+	
+	let moveUp = false;
+	let moveDown = false;
+	let moveLeft = false;
+	let moveRight = false;
+	
+	const onKeyDown = function ( event ) {
+		switch ( event.code ) {
+			case 'ArrowUp':
+			case 'KeyW':
+				moveUp = true;
+				break;
+			case 'ArrowLeft':
+			case 'KeyA':
+				moveLeft = true;
+				break;
+			case 'ArrowDown':
+			case 'KeyS':
+				moveDown = true;
+				break;
+	
+			case 'ArrowRight':
+			case 'KeyD':
+				moveRight = true;
+				break;
+			case 'ArrowRight':
+			case 'KeyD':
+				moveRight = true;
+				break;
+		}
+	};
+	
+	const onKeyUp = function ( event ) {
+		switch ( event.code ) {
+			case 'ArrowUp':
+			case 'KeyW':
+				moveUp = false;
+				break;
+			case 'ArrowLeft':
+			case 'KeyA':
+				moveLeft = false;
+				break;
+			case 'ArrowDown':
+			case 'KeyS':
+				moveDown = false;
+				break;
+			case 'ArrowRight':
+			case 'KeyD':
+				moveRight = false;
+				break;
+		}
+	
+	};
+	
+	document.addEventListener( 'keydown', onKeyDown );
+	document.addEventListener( 'keyup', onKeyUp );
+	
+	var prevTime = performance.now();
+	const velocity = new THREE.Vector3();
+	const direction = new THREE.Vector3();
+	
+	function animate() {
+	
+		requestAnimationFrame( animate );
+	
+		const time = performance.now();
+	
+		if ( controls.isLocked === true ) {
+	
+			const delta = ( time - prevTime ) / 1000;
+	
+			velocity.x -= velocity.x * 10.0 * delta;
+			velocity.y -= velocity.y * 10.0 * delta;
+			velocity.z -= velocity.z * 10.0 * delta;
+			
+			direction.x = Number( moveRight ) - Number( moveLeft );
+			direction.z = Number( moveUp ) - Number( moveDown );
+			direction.normalize(); // this ensures consistent movements in all directions
+	
+			if ( moveLeft || moveRight ) velocity.x -= direction.x * 400.0 * delta;
+			if ( moveUp || moveDown ) velocity.z -= direction.z * 400.0 * delta;
+	
+			controls.moveRight( - velocity.x * delta );
+			controls.moveForward( - velocity.z * delta );
+		}
+	
+		prevTime = time;
+	
+		renderer.render( scene, camera );
+	
 	}
-
-};
-
-document.addEventListener( 'keydown', onKeyDown );
-document.addEventListener( 'keyup', onKeyUp );
-
-var prevTime = performance.now();
-const velocity = new THREE.Vector3();
-const direction = new THREE.Vector3();
-
-function animate() {
-
-	requestAnimationFrame( animate );
-
-	const time = performance.now();
-
-	if ( controls.isLocked === true ) {
-
-		const delta = ( time - prevTime ) / 1000;
-
-		velocity.x -= velocity.x * 10.0 * delta;
-		velocity.y -= velocity.y * 10.0 * delta;
-		velocity.z -= velocity.z * 10.0 * delta;
-		
-		direction.x = Number( moveRight ) - Number( moveLeft );
-		direction.z = Number( moveUp ) - Number( moveDown );
-		direction.normalize(); // this ensures consistent movements in all directions
-
-		if ( moveLeft || moveRight ) velocity.x -= direction.x * 400.0 * delta;
-		if ( moveUp || moveDown ) velocity.z -= direction.z * 400.0 * delta;
-
-		controls.moveRight( - velocity.x * delta );
-		controls.moveForward( - velocity.z * delta );
+	
+	function setCameraControls_Orbit() {
+		// defining the camera movements
+		controls = new OrbitControls(camera, renderer.domElement);
+		controls.listenToKeyEvents(window);
+	
+		controls.enableDamping = true;
+		controls.dampingFactor = 0.1;
+	
+		controls.screenSpacePanning = false;
+	
+		controls.minDistance = 200;
+		controls.maxDistance = 1000;
+	
+		controls.maxPolarAngle = Math.PI;
+		controls.minPolarAngle = -Math.PI;
 	}
-
-	prevTime = time;
-
-	renderer.render( scene, camera );
-
-}
-
-function setCameraControls_Orbit() {
-	// defining the camera movements
-	controls = new OrbitControls(camera, renderer.domElement);
-	controls.listenToKeyEvents(window);
-
-	controls.enableDamping = true;
-	controls.dampingFactor = 0.1;
-
-	controls.screenSpacePanning = false;
-
-	controls.minDistance = 200;
-	controls.maxDistance = 1000;
-
-	controls.maxPolarAngle = Math.PI;
-	controls.minPolarAngle = -Math.PI;
-}
-
-function onWindowResize() {
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
-
-	renderer.setSize(window.innerWidth, window.innerHeight);
+	
+	function onWindowResize() {
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+	
+		renderer.setSize(window.innerWidth, window.innerHeight);
+	}
 }
     
 /*
@@ -265,12 +278,15 @@ Display the dots of the lattice (UNNECESSARY // NEEDS REDOING)
 =========================================================================================
 */
 
-const geometryOrigin = new THREE.SphereGeometry( dotRadius * 20, 8, 4 ); 
-const materialRed = new THREE.MeshBasicMaterial( { color: 0xff0000 } ); 
-const origin = new THREE.Mesh( geometryOrigin, materialRed );
-scene.add( origin );
-
+addOrigin();
 // buildLattice(size, dotRadius, dimension);
+
+function addOrigin() {
+	const geometryOrigin = new THREE.SphereGeometry( dotRadius * 20, 8, 4 ); 
+	const materialRed = new THREE.MeshBasicMaterial( { color: 0xff0000 } ); 
+	const origin = new THREE.Mesh( geometryOrigin, materialRed );
+	scene.add( origin );
+}
 
 function buildLattice( latticeSize, dotRadius, latticeDimension ) {
 	// constants of the lattice geometry and colour
