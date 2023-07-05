@@ -42,7 +42,7 @@ class RandWalk:
         self.runDir = runDir
         self.runNumList = runNumList
         string_value = "".join([str(current_integer) for current_integer in runNumList]) 
-        self.runNumInt = int(string_value)
+        self.runNumInt = string_value
 
     def generateWalk(self, runDir, runNumList, runLocation):
         for i in range(self.length): 
@@ -71,14 +71,15 @@ class selfAvoidantRandWalk(RandWalk):
 
                 # if self intersect
                 if tempRunLocation in runDir:
+                    #print(tempRunLocation,runDir)
                     tempBias[x]=0
                     # if no more options, stop flaging (AND STOP THE WALK)
                     if sum(tempBias) == 0:
-                        flag = False
                         i = self.length
                     # if possible options remaining, retry
                     else:
                         tempBias = normalize(tempBias)
+                        #print(i,tempBias)
                         flag = True
                 # if no self intersect, append to list
                 else:
@@ -88,18 +89,6 @@ class selfAvoidantRandWalk(RandWalk):
                     i += 1
 
         return runNumList, runLocation, runDir
-
-                    
-
-def int2Dir(v):
-    numList = list(map(lambda x: int(x), str(v)))
-    runLocation = [0,0]
-    runDir = [[0,0]]
-    for i in numList:
-        lookup = {0: [1,0], 1: [-1,0], 2: [0,1], 3: [0,-1]}
-        runLocation = [runLocation[0]+lookup[i][0], runLocation[1] + lookup[i][1]]
-        runDir.append(runLocation)
-    return runDir        #this doesnt work for a leading 0 but it seems to work fine otherwise 
 
 def normalize(v):
     total = sum(v)
