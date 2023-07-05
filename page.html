@@ -9,49 +9,56 @@
 <html>
 	<head lang="en">
 		<meta charset="utf-8">
-		<title>Random Walks</title>
+		<title>Random Walks</title> 
 		<style>
-			body { margin: 0; }
+			body { margin: 10px; background-color: rgb(174, 251, 174); }
+			#userInput { align-content: center; margin: 10px; }
+			canvas { display: block; width: 90vw !important; height: 90vh !important; margin: auto; }
+			#textArea { display: block; margin: auto; width: 90vw; }
 		</style>
 	</head>
 	<body>
 		<script type="module" src="/visualizer.js"></script>
 
-		<div>
-			<!--Input Shape-->
-			<input type="radio" id="2S" name="shapeInput" value="_2S" checked>
-			<label for="2S">2D Square Grid</label>
-			<input type="radio" id="2T" name="shapeInput" value="_2T">
-			<label for="2T">2D Triangular Grid</label>
-			<input type="radio" id="2H" name="shapeInput" value="_2H">
-			<label for="2H">2D Hexagonal Grid</label>
-			<br>
-			<input type="radio" id="3S" name="shapeInput" value="_3S">
-			<label for="3S">3D Cubic Honeycomb</label>
-			<input type="radio" id="3T" name="shapeInput" value="_3T">
-			<label for="3T">3D Triangular Pyramidal Honeycomb</label>
-			<!--Input Colouring
-			<br>
-			<label for="colourCheck">Rainbow Coloured</label>
-			<input type="checkbox" id="colourCheck" checked>
-			-->
+		<div id="userInput">
+			<div>
+				<!--Input Shape-->
+				<input type="radio" id="2S" name="shapeInput" value="_2S" checked>
+				<label for="2S">2D Square Grid</label>
+				<input type="radio" id="2T" name="shapeInput" value="_2T">
+				<label for="2T">2D Triangular Grid</label>
+				<input type="radio" id="2H" name="shapeInput" value="_2H">
+				<label for="2H">2D Hexagonal Grid</label>
+				<br>
+				<input type="radio" id="3S" name="shapeInput" value="_3S">
+				<label for="3S">3D Cubic Honeycomb</label>
+				<input type="radio" id="3T" name="shapeInput" value="_3T">
+				<label for="3T">3D Triangular Pyramidal Honeycomb (Broken)</label>
+				<!--Input Colouring
+				<br>
+				<label for="colourCheck">Rainbow Coloured</label>
+				<input type="checkbox" id="colourCheck" checked>
+				-->
+			</div>
+			<div>
+				<!--Option 1: Input Size to generate random walk-->
+				<br>
+				<label for="sizeInput">Option 1: Input length of the walk (computer generated random walk)</label>
+				<input type="text" id="sizeInput" name="sizeInput" value="100">
+				<!--Option 2: Input Walk Code-->
+				<br>
+				<label for="walkInput">Option 2: Input walk code</label>
+				<input type="text" id="walkInput" name="walkInput">
+			</div>
+			<!--Submit Button-->
+			<div>
+				<br>
+				<input type="button" id="submitButton" name="submitButton" value="Submit Walk Settings">
+				<label for="skipAnimation">Animate</label>
+				<input type="checkbox" id="skipAnimation" checked>
+			</div>
 		</div>
-		<div>
-			<!--Option 1: Input Size to generate random walk-->
-			<br>
-			<label for="sizeInput">Option 1: Input length of the walk (computer generated random walk)</label>
-			<input type="text" id="sizeInput" name="sizeInput" value="100">
-			<!--Option 2: Input Walk Code-->
-			<br>
-			<label for="walkInput">Option 2: Input walk code</label>
-			<input type="text" id="walkInput" name="walkInput">
-		</div>
-		<!--Submit Button-->
-		<div>
-			<br>
-			<input type="button" id="submitButton" name="submitButton" value="Submit Walk Settings">
-			<label for="skipAnimation">Animate</label>
-			<input type="checkbox" id="skipAnimation" checked>
-		</div>
+
+		<textarea id="textArea" rows="5"></textarea>
 	</body>
 </html>
