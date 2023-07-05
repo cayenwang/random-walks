@@ -37,7 +37,7 @@ class RandWalk:
         self.nodeBias = lattice.nodeBias 
         self.length = length
 
-        self.generateWalk(runDir, runNumList, runLocation)
+        runNumList, runLocation, runDir = self.generateWalk(runDir, runNumList, runLocation)
 
         self.runDir = runDir
         self.runNumList = runNumList
@@ -50,6 +50,7 @@ class RandWalk:
             runNumList.append(x)
             runLocation = self.adjNode(runLocation)[x] 
             runDir.append(runLocation)
+        return runNumList, runLocation, runDir
             
 class selfAvoidantRandWalk(RandWalk):
 
@@ -57,32 +58,36 @@ class selfAvoidantRandWalk(RandWalk):
 
         i = 0
         while i < self.length: 
+            
+            tempBias = self.nodeBias(runLocation)
 
-            loop = True
-            while loop == True:
+            flag = True
+            while flag == True:
 
-                loop = False
-                x = np.random.choice(range(len(self.adjNode(runLocation))), 1, p = self.nodeBias(runLocation))[0]
+                flag = False
+                x = np.random.choice(range(len(self.adjNode(runLocation))), 1, p = tempBias)[0]
                 
-                runLocation = self.adjNode(runLocation)[x] 
+                tempRunLocation = self.adjNode(runLocation)[x] 
 
                 # if self intersect
-                if runLocation in runDir:
-                    print("self intersect!")
-                    self.nodeBias(runLocation)[x]=0
-                    # if no more options, stop looping (AND STOP THE WALK)
-                    if sum(self.nodeBias(runLocation)) == 0:
-                        loop = False
+                if tempRunLocation in runDir:
+                    tempBias[x]=0
+                    # if no more options, stop flaging (AND STOP THE WALK)
+                    if sum(tempBias) == 0:
+                        flag = False
                         i = self.length
                     # if possible options remaining, retry
                     else:
-                        self.nodeBias = normalize(self.nodeBias(runLocation))
-                        loop = True
+                        tempBias = normalize(tempBias)
+                        flag = True
                 # if no self intersect, append to list
                 else:
+                    runLocation = self.adjNode(runLocation)[x] 
                     runNumList.append(x)
                     runDir.append(runLocation)
                     i += 1
+
+        return runNumList, runLocation, runDir
 
                     
 

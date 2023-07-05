@@ -2,9 +2,8 @@ import RandomWalksTester as ranWal
 import LatticePresets as latP
 import numpy as np 
 #print(len(list(filter(lambda x : (x[0] <= abs(x[1])) and (x[0] >= -abs(x[1])), walk.runDir))))
-plane = ranWal.Lattice(latP.lat2DAdj, latP.funnelBias2D)
+plane = ranWal.Lattice(latP.lat2DAdj)
 
-walk1 = ranWal.RandWalk(plane,10)
-print(walk1.runNumInt)
-walk2 = ranWal.selfAvoidantRandWalk(plane,10)
-print(walk2.runNumInt)
+for i in range(100):
+    walk = ranWal.selfAvoidantRandWalk(plane,100)
+    print(len(str(walk.runNumInt)),walk.runNumInt)
