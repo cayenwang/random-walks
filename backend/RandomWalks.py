@@ -35,7 +35,7 @@ class RandWalk:
         runLocation = origin
         self.adjNode = lattice.adjNode
         self.nodeBias = lattice.nodeBias 
-        self.length = length
+        self.len = length
 
         runNumList, runLocation, runDir = self.generateWalk(runDir, runNumList, runLocation)
 
@@ -45,7 +45,7 @@ class RandWalk:
         self.runNumInt = string_value
 
     def generateWalk(self, runDir, runNumList, runLocation):
-        for i in range(self.length): 
+        for i in range(self.len): 
             x = np.random.choice(range(len(self.adjNode(runLocation))), 1, p = self.nodeBias(runLocation))[0]
             runNumList.append(x)
             runLocation = self.adjNode(runLocation)[x] 
@@ -57,7 +57,7 @@ class selfAvoidantRandWalk(RandWalk):
     def generateWalk(self, runDir, runNumList, runLocation):
 
         i = 0
-        while i < self.length: 
+        while i < self.len: 
             
             tempBias = self.nodeBias(runLocation)
 

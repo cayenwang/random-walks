@@ -1,3 +1,8 @@
+import { 
+	generateRandomWalk,
+	exportWalk
+} from './networking.js';
+
 /*
 =========================================================================================
 Define the global properties
@@ -115,25 +120,29 @@ User Input Handling
 =========================================================================================
 */
 
-var shape, size, sizeInput, walk, walkInput, plotRate;
+var shape, shapeInput, size, sizeInput, walk, walkInput, plotRate;
 
 document.getElementById("submitButton").onclick = function() {
-	shape = eval(document.querySelector('input[name="shapeInput"]:checked').value);
-	sizeInput = document.getElementById("sizeInput").value;
+	shapeInput = document.querySelector('input[name="shapeInput"]:checked').value;
+	sizeInput = parseInt(document.getElementById("sizeInput").value);
 	walkInput = document.getElementById("walkInput").value;
+	
+	shape = eval("_".concat(shapeInput));
 
 	if (walkInput == "") {
 		size = sizeInput;
-		walk = generateRandomWalk(size, shape);
+		generateRandomWalk(shapeInput, size);
+		setTimeout(() => { walk = exportWalk; console.log(walk); }, 1000);
 	} else {
 		size = walkInput.length;
 		walk = walkInput;
 	}
-
-	console.log(walk);
-	clearWalk();
-	setPlotRate();
-	plotWalk(walk);
+	setTimeout(() => { 
+		clearWalk();
+		setPlotRate();
+		plotWalk(walk);
+	 }, 1000);
+	
 };
 
 function setPlotRate() {
@@ -362,6 +371,7 @@ Display a random walk
 
 // Generate a random walk
 
+/*
 function generateRandomWalk(size, shape) {
 	let walk = '';
 	for (let i = 0; i < size; i++) {
@@ -369,6 +379,7 @@ function generateRandomWalk(size, shape) {
 	}
 	return walk
 }
+*/
 
 // Plot the random walk
 
