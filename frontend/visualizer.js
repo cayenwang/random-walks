@@ -150,9 +150,9 @@ Create the scene
 =========================================================================================
 */
 
-import * as THREE from '/three.js-master/build/three.module.js';
-import { OrbitControls } from '/three.js-master/examples/jsm/controls/OrbitControls.js';
-import { PointerLockControls } from '/three.js-master/examples/jsm/controls/PointerLockControls.js';
+import * as THREE from '../three.js-master/build/three.module.js';
+import { OrbitControls } from '../three.js-master/examples/jsm/controls/OrbitControls.js';
+import { PointerLockControls } from '../three.js-master/examples/jsm/controls/PointerLockControls.js';
 
 let camera, controls, scene, renderer;
 
